@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ElectroSky | Ultimate Tech Experience</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: "#3b82f6",
+              darkBg: "#0f172a",
+              cardDark: "#1e293b",
+            },
+            fontFamily: { sans: ["Poppins", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .drawer {
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+      }
+      .dark .glass {
+        background: rgba(15, 23, 42, 0.8);
+      }
+      .swiper-pagination-bullet-active {
+        width: 30px !important;
+        border-radius: 10px !important;
+        background: #3b82f6 !important;
+      }
+      .color-dot.active {
+        border: 3px solid #3b82f6;
+        transform: scale(1.2);
+      }
+      .spec-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+      }
+      .thumb-img {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+      .thumb-img:hover {
+        border-color: #3b82f6;
+        transform: translateY(-3px);
+      }
+      /* Hero Animation */
+      .hero-text {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+      }
+      .swiper-slide-active .hero-text {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-slate-800 dark:bg-darkBg dark:text-white transition-colors duration-300 overflow-x-hidden"
+  >
+    <nav
+      class="glass fixed w-full z-[100] top-0 border-b dark:border-slate-800"
+    >
+      <div
+        class="container mx-auto px-4 py-4 flex justify-between items-center"
+      >
+        <a
+          href="#"
+          class="text-2xl font-black text-brand uppercase tracking-tighter flex items-center gap-2"
+        >
+          <i class="fa-solid fa-bolt text-yellow-400 animate-pulse"></i>
+          ElectroSky
+        </a>
+        <div class="flex items-center gap-5">
+          <button
+            id="theme-btn"
+            class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center hover:text-brand transition"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <div
+            class="relative cursor-pointer group"
+            onclick="toggleDrawer('wishlist-sidebar')"
+          >
+            <i
+              class="fa-regular fa-heart text-2xl group-hover:text-red-500 transition"
+            ></i>
+            <span
+              id="fav-count"
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900"
+              >0</span
+            >
+          </div>
+          <div
+            class="relative cursor-pointer group"
+            onclick="toggleDrawer('cart-sidebar')"
+          >
+            <i
+              class="fa-solid fa-cart-shopping text-2xl group-hover:text-brand transition"
+            ></i>
+            <span
+              id="cart-count-badge"
+              class="absolute -top-2 -right-2 bg-brand text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900"
+              >0</span
+            >
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div
+      id="sidebar-overlay"
+      class="fixed inset-0 bg-black/60 z-[110] hidden backdrop-blur-sm"
+      onclick="closeAllDrawers()"
+    ></div>
+
+    <div
+      id="cart-sidebar"
+      class="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white dark:bg-slate-900 z-[120] translate-x-full drawer shadow-2xl flex flex-col"
+    >
+      <div
+        class="p-6 border-b dark:border-slate-800 flex justify-between items-center bg-gray-50 dark:bg-slate-800/50"
+      >
+        <h2 class="font-bold text-xl uppercase tracking-widest">Your Cart</h2>
+        <button onclick="closeAllDrawers()" class="text-3xl">&times;</button>
+      </div>
+      <div
+        id="cart-items-container"
+        class="flex-1 overflow-y-auto p-4 space-y-4"
+      ></div>
+      <div class="p-6 border-t dark:border-slate-800">
+        <div class="flex justify-between font-black text-xl mb-6">
+          <span>Total:</span
+          ><span id="cart-total" class="text-brand">$0.00</span>
+        </div>
+        <button
+          onclick="window.location.href = 'checkout.html'"
+          class="w-full bg-brand text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 tracking-widest uppercase"
+        >
+          Proceed to Checkout
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="wishlist-sidebar"
+      class="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white dark:bg-slate-900 z-[120] translate-x-full drawer shadow-2xl flex flex-col"
+    >
+      <div
+        class="p-6 border-b dark:border-slate-800 flex justify-between items-center"
+      >
+        <h2 class="font-bold text-xl text-red-500 uppercase tracking-widest">
+          Favorites
+        </h2>
+        <button onclick="closeAllDrawers()" class="text-3xl">&times;</button>
+      </div>
+      <div
+        id="wishlist-items-container"
+        class="flex-1 overflow-y-auto p-4"
+      ></div>
+    </div>
+
+    <section class="relative h-[600px] lg:h-[800px] mt-[72px] overflow-hidden">
+      <div class="swiper heroSwiper h-full">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide relative">
+            <video
+              autoplay
+              muted
+              loop
+              source
+              src="thef.mp4"
+              type="video/mp4"
+              class="absolute inset-0 w-full h-full object-cover"
+            ></video>
+
+            <div class="absolute inset-0 bg-black/40 flex items-center">
+              <div class="container mx-auto px-6 hero-text text-white">
+                <span
+                  class="bg-brand px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 inline-block tracking-widest"
+                  >Professional Power</span
+                >
+                <h1
+                  class="text-5xl lg:text-8xl font-black mb-6 leading-tight uppercase"
+                >
+                  MacBook Pro M3<br />The Power House.
+                </h1>
+                <p class="text-lg opacity-80 max-w-xl mb-8">
+                  Experience the most advanced chip ever built for a personal
+                  computer.
+                </p>
+                <button
+                  class="bg-white text-brand px-10 py-4 rounded-2xl font-bold text-lg hover:bg-brand hover:text-white transition-all shadow-xl"
+                >
+                  Order Now
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide relative">
+            <img
+              src="https://images.unsplash.com/photo-1603481588273-2f908a9a7a1b?w=1600"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-purple-900/40 flex items-center">
+              <div class="container mx-auto px-6 hero-text text-white">
+                <span
+                  class="bg-purple-600 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 inline-block tracking-widest"
+                  >Gaming Evolution</span
+                >
+                <h1
+                  class="text-5xl lg:text-8xl font-black mb-6 leading-tight uppercase"
+                >
+                  Level Up Your<br />Experience.
+                </h1>
+                <p class="text-lg opacity-80 max-w-xl mb-8">
+                  Dominate every game with our new RGB mechanical gear
+                  collection.
+                </p>
+                <button
+                  class="bg-purple-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-purple-700 transition-all shadow-xl"
+                >
+                  Explore Gear
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide relative">
+            <video
+              autoplay
+              muted
+              loop
+              source
+              src="sli2.mp4"
+              type="video/mp4"
+              class="absolute inset-0 w-full h-full object-cover"
+            ></video>
+            <div
+              class="absolute inset-0 bg-blue-900/30 flex items-center justify-center text-center"
+            >
+              <div class="container mx-auto px-6 hero-text text-white">
+                <span
+                  class="bg-green-500 px-4 py-1 rounded-full text-xs font-bold uppercase mb-4 inline-block tracking-widest"
+                  >Fitness Focus</span
+                >
+                <h1
+                  class="text-5xl lg:text-8xl font-black mb-6 leading-tight uppercase"
+                >
+                  Smart Tracking.<br />Perfect Fit.
+                </h1>
+                <p class="text-lg opacity-80 max-w-2xl mx-auto mb-8">
+                  The all-new Ultra Smart Watch collection is ready for your
+                  next adventure.
+                </p>
+                <button
+                  class="bg-green-500 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-green-600 transition-all"
+                >
+                  Shop Collection
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next !text-white !hidden lg:!flex"></div>
+        <div class="swiper-button-prev !text-white !hidden lg:!flex"></div>
+      </div>
+    </section>
+
+    <section class="py-24 container mx-auto px-4">
+      <h2
+        class="text-4xl font-black mb-12 border-l-8 border-brand pl-6 uppercase tracking-tighter"
+        data-aos="fade-right"
+      >
+        Featured Tech
+      </h2>
+      <div
+        id="product-grid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+      ></div>
+    </section>
+
+    <section class="py-20 bg-slate-100 dark:bg-slate-800/50">
+      <div class="container mx-auto px-4">
+        <div
+          class="bg-white dark:bg-cardDark rounded-[3rem] p-8 lg:p-16 shadow-2xl relative overflow-hidden"
+          data-aos="zoom-in"
+        >
+          <div
+            class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 text-center lg:text-left"
+          >
+            <div>
+              <span
+                class="bg-red-500 text-white px-4 py-1 rounded-full text-xs font-bold animate-pulse uppercase"
+                >Flash Sale</span
+              >
+              <h2 class="text-5xl font-black mt-4 mb-6 uppercase">
+                Up To 50% Off
+              </h2>
+              <div class="flex gap-4 justify-center lg:justify-start">
+                <div
+                  class="bg-slate-900 text-white p-4 rounded-2xl min-w-[70px] text-center"
+                >
+                  <span class="block text-2xl font-bold">09</span
+                  ><span class="text-[10px]">HRS</span>
+                </div>
+                <div
+                  class="bg-slate-900 text-white p-4 rounded-2xl min-w-[70px] text-center"
+                >
+                  <span class="block text-2xl font-bold">24</span
+                  ><span class="text-[10px]">MIN</span>
+                </div>
+              </div>
+            </div>
+            <img
+              src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500"
+              class="w-64 h-64 object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 container mx-auto px-4">
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center"
+        data-aos="fade-up"
+      >
+        <div>
+          <i class="fa-solid fa-truck-fast text-4xl text-brand mb-6"></i>
+          <h4 class="font-bold text-xl mb-3 uppercase tracking-widest">
+            Global Delivery
+          </h4>
+          <p class="text-gray-500 text-sm">
+            We ship your gadgets anywhere in 24h.
+          </p>
+        </div>
+        <div>
+          <i class="fa-solid fa-shield-halved text-4xl text-brand mb-6"></i>
+          <h4 class="font-bold text-xl mb-3 uppercase tracking-widest">
+            2-Year Warranty
+          </h4>
+          <p class="text-gray-500 text-sm">
+            Full coverage for every device we sell.
+          </p>
+        </div>
+        <div>
+          <i class="fa-solid fa-headset text-4xl text-brand mb-6"></i>
+          <h4 class="font-bold text-xl mb-3 uppercase tracking-widest">
+            Pro Support
+          </h4>
+          <p class="text-gray-500 text-sm">
+            Technical support ready to help 24/7.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-slate-900 text-gray-400 pt-20 pb-10">
+      <div
+        class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 mb-10"
+      >
+        <div>
+          <h3
+            class="text-3xl font-black text-white mb-6 uppercase tracking-widest"
+          >
+            ElectroSky
+          </h3>
+          <p>Your portal to the digital future. Quality and Innovation.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-4 uppercase">Direct Contact</h4>
+          <p>hello@electrosky.tech<br />+1 555-TECH-SKY</p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-4 uppercase">Follow Us</h4>
+          <div class="flex gap-4 text-2xl">
+            <i
+              class="fa-brands fa-instagram hover:text-white transition cursor-pointer"
+            ></i
+            ><i
+              class="fa-brands fa-facebook hover:text-white transition cursor-pointer"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <div
+        class="border-t border-slate-800 text-center pt-8 text-[10px] uppercase tracking-widest"
+      >
+        &copy; 2026 ElectroSky. All rights reserved.
+      </div>
+    </footer>
+
+    <div
+      id="modal-overlay"
+      class="fixed inset-0 bg-black/80 z-[200] hidden backdrop-blur-md"
+      onclick="closeProductModal()"
+    ></div>
+    <div
+      id="product-modal"
+      class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-4xl bg-white dark:bg-cardDark z-[210] hidden rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row transform scale-90 opacity-0 transition-all duration-300"
+    >
+      <div
+        class="md:w-1/2 p-8 bg-gray-50 dark:bg-slate-800 flex flex-col items-center justify-center"
+      >
+        <div class="h-64 flex items-center justify-center mb-6">
+          <img
+            id="modal-main-img"
+            src=""
+            class="max-h-full object-contain transition-all duration-300"
+          />
+        </div>
+        <div id="modal-thumbnails" class="flex gap-3 mt-4"></div>
+      </div>
+      <div class="md:w-1/2 p-12 relative flex flex-col">
+        <button
+          onclick="closeProductModal()"
+          class="absolute top-8 right-8 text-3xl hover:text-red-500"
+        >
+          &times;
+        </button>
+        <h2
+          id="modal-name"
+          class="text-3xl font-black mb-2 uppercase leading-tight"
+        ></h2>
+        <p id="modal-price-val" class="text-2xl font-bold text-brand mb-6"></p>
+
+        <div class="mb-6">
+          <p class="font-bold text-xs uppercase mb-3">Color:</p>
+          <div class="flex gap-3">
+            <div
+              onclick="selectOpt(this, 'color-dot')"
+              class="color-dot w-8 h-8 rounded-full bg-black cursor-pointer active shadow-lg"
+            ></div>
+            <div
+              onclick="selectOpt(this, 'color-dot')"
+              class="color-dot w-8 h-8 rounded-full bg-slate-400 cursor-pointer shadow-lg"
+            ></div>
+            <div
+              onclick="selectOpt(this, 'color-dot')"
+              class="color-dot w-8 h-8 rounded-full bg-brand cursor-pointer shadow-lg"
+            ></div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <p class="font-bold text-xs uppercase mb-3">Storage:</p>
+          <div class="flex gap-2">
+            <button
+              onclick="selectOpt(this, 'spec-btn')"
+              class="spec-btn border dark:border-slate-700 px-4 py-2 rounded-xl text-[10px] font-black active uppercase"
+            >
+              256GB
+            </button>
+            <button
+              onclick="selectOpt(this, 'spec-btn')"
+              class="spec-btn border dark:border-slate-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase"
+            >
+              512GB
+            </button>
+            <button
+              onclick="selectOpt(this, 'spec-btn')"
+              class="spec-btn border dark:border-slate-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase"
+            >
+              1TB
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 mt-auto">
+          <button
+            id="modal-add-to-cart"
+            class="w-full bg-slate-900 dark:bg-brand text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:opacity-90 transition"
+          >
+            Add To Cart
+          </button>
+          <button
+            onclick="window.location.href = 'checkout.html'"
+            class="w-full border-2 border-brand text-brand py-4 rounded-2xl font-bold hover:bg-brand hover:text-white transition uppercase tracking-widest"
+          >
+            Buy It Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({ once: true });
+
+      // Hero Swiper (FULL CONFIGURATION)
+      const heroSwiper = new Swiper(".heroSwiper", {
+        loop: true,
+        effect: "fade",
+        speed: 1000,
+        autoplay: { delay: 5000, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+
+      // Product Data with Galleries
+      const products = [
+        {
+          id: 1,
+          name: "MacBook Pro M3",
+          price: 1999,
+          img: "product/iphone1111.jpg",
+          gallery: [
+            "product/iphon11.jpg",
+            "product/iphon111.jpg",
+            "product/iphon1.jpg",
+          ],
+        },
+        {
+          id: 2,
+          name: "iPhone 15 Pro",
+          price: 1199,
+          img: "product/iphon2222.jpg",
+          gallery: [
+            "product/iphon22.jpg",
+            "product/iphon222.jpg",
+            "product/iphon2.jpg",
+          ],
+        },
+        {
+          id: 3,
+          name: "Sony XM5 Headphones",
+          price: 348,
+          img: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500",
+          gallery: [
+            "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500",
+            "https://images.unsplash.com/photo-1545127398-14699f92334b?w=500",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500",
+          ],
+        },
+        {
+          id: 4,
+          name: "Samsung S24 Ultra",
+          price: 1299,
+          img: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500",
+          gallery: [
+            "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500",
+            "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500",
+          ],
+        },
+        {
+          id: 5,
+          name: "Apple Watch Ultra",
+          price: 799,
+          img: "product/appw1.jpg",
+          gallery: ["product/appw11.jpg", "product/appw111.jpg"],
+        },
+        {
+          id: 6,
+          name: "iPad Pro M2",
+          price: 999,
+          img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500",
+          gallery: [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500",
+            "product/ipad.jpg",
+          ],
+        },
+        {
+          id: 7,
+          name: "Gaming Desktop ROG",
+          price: 2499,
+          img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500",
+          gallery: [
+            "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500",
+            "https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=500",
+          ],
+        },
+        {
+          id: 8,
+          name: "AirPods Max",
+          price: 549,
+          img: "product/air1.jpg",
+          gallery: [
+            "product/air1.jpg",
+            "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
+          ],
+        },
+      ];
+
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+      function renderProducts() {
+        document.getElementById("product-grid").innerHTML = products
+          .map((p) => {
+            const isFav = wishlist.some((item) => item.id === p.id);
+            return `
+                <div class="bg-white dark:bg-cardDark rounded-[2.5rem] p-6 shadow-xl hover:-translate-y-3 transition-all group" data-aos="fade-up">
+                    <div class="relative h-60 mb-6 rounded-[2rem] bg-gray-50 dark:bg-slate-800 cursor-pointer overflow-hidden" onclick="openProductModal(${p.id})">
+                        <img src="${p.img}" class="w-full h-full object-contain group-hover:scale-110 transition duration-700">
+                        <button onclick="event.stopPropagation(); toggleFav(${p.id})" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-700/80 w-10 h-10 rounded-2xl flex items-center justify-center">
+                            <i class="${isFav ? "fa-solid text-red-500" : "fa-regular"} fa-heart"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-black text-lg mb-2 truncate uppercase tracking-tight">${p.name}</h3>
+                    <div class="flex justify-between items-center"><span class="text-brand font-black text-xl">$${p.price}</span>
+                    <button onclick="addToCart(${p.id})" class="bg-brand text-white w-12 h-12 rounded-xl active:scale-90 transition"><i class="fa-solid fa-cart-plus"></i></button></div>
+                </div>`;
+          })
+          .join("");
+      }
+
+      function openProductModal(id) {
+        const p = products.find((prod) => prod.id === id);
+        document.getElementById("modal-name").innerText = p.name;
+        document.getElementById("modal-price-val").innerText = "$" + p.price;
+        document.getElementById("modal-main-img").src = p.img;
+
+        const thumbContainer = document.getElementById("modal-thumbnails");
+        thumbContainer.innerHTML = p.gallery
+          .map(
+            (imgSrc) => `
+                <img src="${imgSrc}" class="thumb-img w-16 h-16 rounded-xl object-contain bg-white cursor-pointer border-2 shadow-sm" 
+                     onmouseover="document.getElementById('modal-main-img').src='${imgSrc}'">
+            `,
+          )
+          .join("");
+
+        document.getElementById("modal-overlay").classList.remove("hidden");
+        const m = document.getElementById("product-modal");
+        m.classList.remove("hidden");
+        setTimeout(() => {
+          m.classList.remove("scale-90", "opacity-0");
+        }, 10);
+        document.getElementById("modal-add-to-cart").onclick = () => {
+          addToCart(p.id);
+          closeProductModal();
+        };
+      }
+
+      // Standard Store Functions
+      function selectOpt(el, cls) {
+        document
+          .querySelectorAll("." + cls)
+          .forEach((e) => e.classList.remove("active"));
+        el.classList.add("active");
+      }
+      function closeProductModal() {
+        document
+          .getElementById("product-modal")
+          .classList.add("scale-90", "opacity-0");
+        setTimeout(() => {
+          document.getElementById("product-modal").classList.add("hidden");
+          document.getElementById("modal-overlay").classList.add("hidden");
+        }, 300);
+      }
+      function toggleDrawer(id) {
+        closeAllDrawers();
+        document.getElementById(id).classList.remove("translate-x-full");
+        document.getElementById("sidebar-overlay").classList.remove("hidden");
+      }
+      function closeAllDrawers() {
+        document
+          .querySelectorAll(".drawer")
+          .forEach((d) => d.classList.add("translate-x-full"));
+        document.getElementById("sidebar-overlay").classList.add("hidden");
+      }
+      function addToCart(id) {
+        cart.push(products.find((p) => p.id === id));
+        updateUI();
+        toggleDrawer("cart-sidebar");
+      }
+      function toggleFav(id) {
+        const idx = wishlist.findIndex((p) => p.id === id);
+        if (idx === -1) wishlist.push(products.find((p) => p.id === id));
+        else wishlist.splice(idx, 1);
+        updateUI();
+        renderProducts();
+      }
+
+      function updateUI() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+        document.getElementById("cart-count-badge").innerText = cart.length;
+        document.getElementById("fav-count").innerText = wishlist.length;
+        let total = 0;
+        document.getElementById("cart-items-container").innerHTML = cart
+          .map((item, idx) => {
+            total += item.price;
+            return `<div class="flex gap-4 items-center bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl">
+                    <img src="${item.img}" class="w-12 h-12 object-contain"><div class="flex-1 font-bold text-xs">${item.name}<br><span class="text-brand font-black">$${item.price}</span></div>
+                    <button onclick="cart.splice(${idx},1); updateUI()"><i class="fa-solid fa-trash-can text-red-400 hover:text-red-600"></i></button></div>`;
+          })
+          .join(
+            cart.length
+              ? ""
+              : '<p class="text-center opacity-40 py-10">Cart is empty</p>',
+          );
+        document.getElementById("cart-total").innerText =
+          `$${total.toFixed(2)}`;
+        document.getElementById("wishlist-items-container").innerHTML = wishlist
+          .map(
+            (item, idx) => `
+                <div class="flex gap-4 items-center bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl mb-4">
+                    <img src="${item.img}" class="w-12 h-12 object-contain"><div class="flex-1 font-bold text-sm">${item.name}</div>
+                    <button onclick="wishlist.splice(${idx},1); updateUI(); renderProducts()" class="text-red-500 font-black">&times;</button></div>`,
+          )
+          .join(
+            wishlist.length
+              ? ""
+              : '<p class="text-center opacity-40 py-10">No favorites</p>',
+          );
+      }
+
+      document.getElementById("theme-btn").addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark");
+      });
+      renderProducts();
+      updateUI();
+      function updateUI() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+        // تحديث العدادات
+        document.getElementById("cart-count-badge").innerText = cart.length;
+        document.getElementById("fav-count").innerText = wishlist.length;
+
+        let total = 0;
+        const cartContainer = document.getElementById("cart-items-container");
+        const checkoutBtn = document.querySelector(
+          '#cart-sidebar button[onclick*="checkout.html"]',
+        ); // مسكنا زرار الشيك أوت
+
+        if (cart.length === 0) {
+          // لو السلة فاضية
+          cartContainer.innerHTML =
+            '<p class="text-center opacity-40 py-10">Your cart is empty</p>';
+
+          // تعطيل الزرار وتغيير شكله (متغيرش في الديزاين الأصلي بس بنخليه Disabled)
+          checkoutBtn.disabled = true;
+          checkoutBtn.style.opacity = "0.5";
+          checkoutBtn.style.cursor = "not-allowed";
+          checkoutBtn.style.filter = "grayscale(1)";
+        } else {
+          // لو السلة فيها منتجات
+          cartContainer.innerHTML = cart
+            .map((item, idx) => {
+              total += item.price;
+              return `<div class="flex gap-4 items-center bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl">
+                <img src="${item.img}" class="w-12 h-12 object-contain">
+                <div class="flex-1 font-bold text-xs">${item.name}<br><span class="text-brand font-black">$${item.price}</span></div>
+                <button onclick="cart.splice(${idx},1); updateUI()"><i class="fa-solid fa-trash-can text-red-400 hover:text-red-600"></i></button>
+            </div>`;
+            })
+            .join("");
+
+          // تفعيل الزرار ورجوعه لحالته الطبيعية
+          checkoutBtn.disabled = false;
+          checkoutBtn.style.opacity = "1";
+          checkoutBtn.style.cursor = "pointer";
+          checkoutBtn.style.filter = "grayscale(0)";
+        }
+
+        document.getElementById("cart-total").innerText =
+          `$${total.toFixed(2)}`;
+
+        // تحديث قائمة المفضلة
+        document.getElementById("wishlist-items-container").innerHTML = wishlist
+          .map(
+            (item, idx) => `
+        <div class="flex gap-4 items-center bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl mb-4">
+            <img src="${item.img}" class="w-12 h-12 object-contain"><div class="flex-1 font-bold text-sm">${item.name}</div>
+            <button onclick="wishlist.splice(${idx},1); updateUI(); renderProducts()" class="text-red-500 font-black">&times;</button>
+        </div>`,
+          )
+          .join(
+            wishlist.length
+              ? ""
+              : '<p class="text-center opacity-40 py-10">No favorites</p>',
+          );
+      }
+    </script>
+  </body>
+</html>
